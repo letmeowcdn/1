@@ -1,6 +1,6 @@
 {
   "base": "https://letmeowcdn.github.io/1",
-  "count": 2,
+  "count": 9,
   "files": [
     {
       "name": "1.svg",
@@ -9,6 +9,34 @@
     {
       "name": "2.png",
       "url": "https://letmeowcdn.github.io/1/2.png"
+    },
+    {
+      "name": "3.ttf",
+      "url": "https://letmeowcdn.github.io/1/3.ttf"
+    },
+    {
+      "name": "4.ttf",
+      "url": "https://letmeowcdn.github.io/1/4.ttf"
+    },
+    {
+      "name": "5.woff",
+      "url": "https://letmeowcdn.github.io/1/5.woff"
+    },
+    {
+      "name": "6.woff",
+      "url": "https://letmeowcdn.github.io/1/6.woff"
+    },
+    {
+      "name": "7.woff2",
+      "url": "https://letmeowcdn.github.io/1/7.woff2"
+    },
+    {
+      "name": "8.woff2",
+      "url": "https://letmeowcdn.github.io/1/8.woff2"
+    },
+    {
+      "name": "9.jpg",
+      "url": "https://letmeowcdn.github.io/1/9.jpg"
     }
   ]
 }
