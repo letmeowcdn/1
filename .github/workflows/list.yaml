@@ -29,6 +29,7 @@ jobs:
 
           EXCLUDE = {"README.md", "files.json", "index.html", "404.html", "info.txt"}
 
+
           files = []
           for root, dirs, filenames in os.walk("."):
               if "/.github" in root or "/.git" in root or root.startswith("./.github") or root.startswith("./.git"):
@@ -37,15 +38,46 @@ jobs:
                   if f in EXCLUDE:
                       continue
                   path = os.path.relpath(os.path.join(root, f), ".").replace("\\", "/")
-                  files.append(path)
-          files.sort()
+                  files.append({"name": path, "url": f"{BASE}/{path}"})
+          files.sort(key=lambda x: x["name"])
 
-          # === README ===
+    
+          custom = []
+          if os.path.exists("files.json"):
+              try:
+                  with open("files.json", "r", encoding="utf-8") as fp:
+                      old = json.load(fp)
+                      custom = old.get("custom", [])
+              except Exception as e:
+                  print("Ошибка чтения files.json:", e)
+
+  
+          data = {
+              "base": BASE,
+              "count": len(files),
+              "custom": custom,
+              "files": files
+          }
+          with open("files.json", "w", encoding="utf-8") as fp:
+              json.dump(data, fp, ensure_ascii=False, indent=2)
+
+          # === 4. README из files.json ===
           block_lines = ["<!-- lmcdn -->"]
+
+          if custom:
+              block_lines.append("### 🔗 Свои ссылки")
+              block_lines.append("")
+              for c in custom:
+                  block_lines.append(f"- **{c['name']}**")
+                  block_lines.append(f"  - {c['url']}")
+              block_lines.append("")
+
+          block_lines.append("### 📁 Файлы")
+          block_lines.append("")
           for f in files:
-              url = f"{BASE}/{f}"
-              block_lines.append(f"- **{f}**")
-              block_lines.append(f"  - {url}")
+              block_lines.append(f"- **{f['name']}**")
+              block_lines.append(f"  - {f['url']}")
+
           block_lines.append("<!-- lmcdn -->")
           block = "\n".join(block_lines)
 
@@ -60,22 +92,12 @@ jobs:
 
           with open("README.md", "w", encoding="utf-8") as fp:
               fp.write(content)
-
-          # === files.json ===
-          data = {
-              "base": BASE,
-              "count": len(files),
-              "files": [
-                  {"name": f, "url": f"{BASE}/{f}"} for f in files
-              ]
-          }
-          with open("files.json", "w", encoding="utf-8") as fp:
-              json.dump(data, fp, ensure_ascii=False, indent=2)
           PYEOF
 
       - name: Commit and push
         run: |
           git config user.name "LetMeow Bot"
+          git config user.email "letmeow-bot@users.noreply.github.com"
           git add README.md files.json
           if git diff --staged --quiet; then
             echo "Нет изменений"
