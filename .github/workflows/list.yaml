@@ -1,0 +1,47 @@
+name: LETMEOW README FILE LIST
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Generate file list and update README
+        run: |
+          FILES=$(find . -type f ! -path "./.github/*" ! -name "README.md" | sed 's|^\./||' | sort)
+          {
+            echo "<!-- lmcdn -->"
+            for FILE in $FILES; do
+              URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/$FILE"
+              echo "- **$FILE**"
+              echo "  - $URL"
+            done
+            echo "<!-- lmcdn -->"
+          } > /tmp/files_block.txt
+            /<!-- lmcdn -->/ {
+              if (in_block == 0) {
+                in_block = 1
+                while ((getline line < "/tmp/files_block.txt") > 0) print line
+                next
+              } else {
+                in_block = 0
+                next
+              }
+            }
+            !in_block { print }
+          ' README.md > /tmp/README.new && mv /tmp/README.new README.md
+      - name: Commit and push
+        run: |
+          git config --global user.name "FelineAPI Bot"
+          git config --global user.email "felineapi@ro.ru"
+          git add README.md
+          if git diff --staged --quiet; then
+            echo "Нет изменений"
+          else
+            git commit -m "Автообновление списка файлов (lmcdn)"
+            git push
+          fi
