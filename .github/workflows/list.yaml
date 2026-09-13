@@ -1,4 +1,5 @@
-name: LETMEOW README FILE LIST
+name: LETMEOW LLC LIST README
+on:
   push:
     branches:
       - main
