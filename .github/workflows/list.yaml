@@ -75,8 +75,8 @@ jobs:
 
       - name: Commit and push
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "FelineAPI Bot"
+          git config user.email "felineapi@ro.ru"
           git add README.md files.json
           if git diff --staged --quiet; then
             echo "Нет изменений"
