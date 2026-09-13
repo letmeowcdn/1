@@ -1,48 +1,78 @@
-name: LETMEOW LLC LIST README
+name: Update README file list
+
 on:
   push:
     branches:
       - main
+
 permissions:
   contents: write
+
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Generate file list and update README
+
+      - name: Update README
         run: |
-          FILES=$(find . -type f ! -path "./.github/*" ! -name "README.md" | sed 's|^\./||' | sort)
-          {
-            echo "<!-- lmcdn -->"
-            for FILE in $FILES; do
-              URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/$FILE"
-              echo "- **$FILE**"
-              echo "  - $URL"
-            done
-            echo "<!-- lmcdn -->"
-          } > /tmp/files_block.txt
-            /<!-- lmcdn -->/ {
-              if (in_block == 0) {
-                in_block = 1
-                while ((getline line < "/tmp/files_block.txt") > 0) print line
-                next
-              } else {
-                in_block = 0
-                next
-              }
-            }
-            !in_block { print }
-          ' README.md > /tmp/README.new && mv /tmp/README.new README.md
+          python3 << 'PYEOF'
+          import os
+          import re
+
+          REPO = os.environ.get("GITHUB_REPOSITORY", "")  # user/repo
+          OWNER, NAME = REPO.split("/") if "/" in REPO else (REPO, "")
+          BASE = f"https://{OWNER}.github.io/{NAME}"
+
+          # Собираем файлы
+          files = []
+          for root, dirs, filenames in os.walk("."):
+              # Пропускаем .github и .git
+              if "/.github" in root or "/.git" in root:
+                  continue
+              if root.startswith("./.github") or root.startswith("./.git"):
+                  continue
+              for f in filenames:
+                  if f == "README.md":
+                      continue
+                  path = os.path.relpath(os.path.join(root, f), ".")
+                  files.append(path)
+          files.sort()
+
+          # Формируем блок
+          block_lines = ["<!-- lmcdn -->"]
+          for f in files:
+              url = f"{BASE}/{f}"
+              block_lines.append(f"- **{f}**")
+              block_lines.append(f"  - {url}")
+          block_lines.append("<!-- lmcdn -->")
+          block = "\n".join(block_lines)
+
+          # Читаем README
+          with open("README.md", "r", encoding="utf-8") as fp:
+              content = fp.read()
+
+          # Заменяем между маркерами
+          pattern = re.compile(r"<!-- lmcdn -->.*?<!-- lmcdn -->", re.DOTALL)
+          if pattern.search(content):
+              new_content = pattern.sub(block, content)
+          else:
+              new_content = content + "\n\n" + block + "\n"
+
+          with open("README.md", "w", encoding="utf-8") as fp:
+              fp.write(new_content)
+          PYEOF
+
       - name: Commit and push
         run: |
-          git config --global user.name "FelineAPI Bot"
-          git config --global user.email "felineapi@ro.ru"
+          git config user.name "FelineAPI Bot"
+          git config user.email "felineapi@ro.ru"
           git add README.md
           if git diff --staged --quiet; then
             echo "Нет изменений"
           else
-            git commit -m "Автообновление списка файлов (lmcdn)"
+            git commit -m "Автообновление README (lmcdn)"
             git push
           fi
