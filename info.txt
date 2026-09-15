@@ -7,4 +7,4 @@
 7.woff2 - MineCraft Font Logo
 8.woff2 - MineCraft Font Text
 9.jpg - LetCDN Логотип
-10.iso - Образ Windows 11, русская версия, x64
+10.png
