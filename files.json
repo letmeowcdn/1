@@ -1,11 +1,15 @@
 {
   "base": "https://letmeowcdn.github.io/1",
-  "count": 9,
+  "count": 10,
   "custom": [],
   "files": [
     {
       "name": "1.svg",
       "url": "https://letmeowcdn.github.io/1/1.svg"
+    },
+    {
+      "name": "10.png",
+      "url": "https://letmeowcdn.github.io/1/10.png"
     },
     {
       "name": "2.png",

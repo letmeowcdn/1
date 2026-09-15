@@ -5,6 +5,8 @@
 
 - **1.svg**
   - https://letmeowcdn.github.io/1/1.svg
+- **10.png**
+  - https://letmeowcdn.github.io/1/10.png
 - **2.png**
   - https://letmeowcdn.github.io/1/2.png
 - **3.ttf**
